@@ -5,29 +5,23 @@ services:
     image: rosev3-robot
     networks:
       rosnet:
-        ipv4_address: 192.168.0.102
+        ipv4_address: 192.168.1.111
     extends:
       file: "../master/docker-compose.yml"
       service: master
     container_name: robot
-    hostname: robot
+    hostname: 192.168.1.111
     working_dir: /home/ros/catkin-ws/src/ev3_launch/launch
-    command: bash -c "roslaunch ./motors.launch ev3_hostname:=ev3dev & roslaunch ./ir.launch ev3_hostname:=ev3dev"
-
-  teleop:
-    build: .
-    image: rosev3-robot
-    networks:
-      rosnet:
-        ipv4_address: 192.168.0.103
-    extends:
-      file: "../master/docker-compose.yml"
-      service: master
-    container_name: teleop
-    hostname: teleop
-    command: bash -c "rosrun teleop_twist_keyboard teleop_twist_keyboard.py"
+    command: bash -c "roslaunch ./motors.launch ev3_hostname:=ev3dev"
+    environment:
+      - ROS_MASTER_URI=${MASTER_URI}
 
 networks:
   rosnet:
-    external:
-      name: master_rosnet
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
