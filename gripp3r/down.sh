@@ -6,4 +6,3 @@ docker-compose down
 docker-compose rm -f
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
-
